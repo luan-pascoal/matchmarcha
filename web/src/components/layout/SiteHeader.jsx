@@ -116,7 +116,7 @@ export function SiteHeaderLoggedActions({ dadosUsuario, tipoUsuario, carregarUsu
           <nav className="dropdown__secao dropdown__secao--links" aria-label="Menu do usuario">
             {isInstrutor ? (
               <>
-                <Link to="/mensagens" onClick={() => setMenuAberto(false)}>Mensagens</Link>
+                <Link to="/chat" onClick={() => setMenuAberto(false)}>Mensagens</Link>
                 <Link to="/minhas-aulas" onClick={() => setMenuAberto(false)}>Minhas Aulas</Link>
                 <Link to="/editar-perfil" className="dropdown__link" onClick={() => setMenuAberto(false)}>
                   Editar Perfil
@@ -135,7 +135,7 @@ export function SiteHeaderLoggedActions({ dadosUsuario, tipoUsuario, carregarUsu
               </>
             ) : (
               <>
-                <Link to="/mensagens" onClick={() => setMenuAberto(false)}>Mensagens</Link>
+                <Link to="/chat" onClick={() => setMenuAberto(false)}>Mensagens</Link>
                 <Link to="/minhas-aulas" onClick={() => setMenuAberto(false)}>Minhas Aulas</Link>
                 <Link to="/editar-perfil" onClick={() => setMenuAberto(false)}>Editar Perfil</Link>
                 <Link to="/ajuda" onClick={() => setMenuAberto(false)}>Ajuda</Link>

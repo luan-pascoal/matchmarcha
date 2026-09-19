@@ -59,6 +59,7 @@ class Solicitacao{
             s.Slc_categoria    AS categoria,
             s.Slc_periodo      AS periodo,
             s.Slc_status       AS status,
+            u.Usu_id AS usuario_id,
             u.Usu_nome         AS nome,
             u.Usu_foto         AS foto,
             c.Cid_nome         AS cidade,

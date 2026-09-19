@@ -125,18 +125,23 @@ CREATE TABLE IF NOT EXISTS Tb_Contato (
 -- TABELA MENSAGEM
 -- =========================
 CREATE TABLE IF NOT EXISTS Tb_Mensagem (
-    Msg_id          INT AUTO_INCREMENT PRIMARY KEY,
-    Msg_texto       VARCHAR(1024) NOT NULL,
-    Msg_remetente   VARCHAR(32)   NOT NULL,
-    Msg_datacriacao TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    Msg_dataupdate  TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    Msg_datadelete  TIMESTAMP     NULL     DEFAULT NULL,
-    Msg_contatoid   INT           NOT NULL,
+    Msg_id              INT AUTO_INCREMENT PRIMARY KEY,
+    Msg_texto           VARCHAR(1024) NULL     DEFAULT NULL,
+    Msg_remetente       VARCHAR(32)   NOT NULL,
+    Msg_anexocaminho    VARCHAR(255)  NULL     DEFAULT NULL,
+    Msg_anexotipo       VARCHAR(16)   NULL     DEFAULT NULL,
+    Msg_datacriacao     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Msg_dataupdate      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Msg_datadelete      TIMESTAMP     NULL     DEFAULT NULL,
+    Msg_ocultoUsuario   TIMESTAMP     NULL     DEFAULT NULL,
+    Msg_ocultoInstrutor TIMESTAMP     NULL     DEFAULT NULL,
+    Msg_contatoid       INT           NOT NULL,
 
     CONSTRAINT fk_mensagem_contato
         FOREIGN KEY (Msg_contatoid)
         REFERENCES Tb_Contato(Ctt_id)
 );
+
 
 -- =========================
 -- TABELA AULA

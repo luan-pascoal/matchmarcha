@@ -7,7 +7,7 @@ import { ListaSolicitacoes } from "./ListaSolicitacoes/ListaSolicitacoes";
 import { Paginacao } from "./Paginacao/Paginacao";
 import axios from 'axios';
 
-export function MinhasSolicitacoes({ usuario, dadosUsuario, carregarUsuario }) {
+export function MinhasSolicitacoes({ usuario, dadosUsuario, carregarUsuario, buscarContatos }) {
 
     const [carregando, setCarregando] = useState(true);
     const [pagina, setPagina] = useState(1);
@@ -143,6 +143,16 @@ export function MinhasSolicitacoes({ usuario, dadosUsuario, carregarUsuario }) {
 
     };
 
+    // Função responsável pela criação de contatos e da primeira mensagem do contato, cujo autor é o sistema
+    const criarContato = async(usuarioId) => {
+        return await axios.post('/api/contatos', {
+            usuario_id: usuarioId
+        }, {
+            validateStatus: ()=> true,
+            withCredentials: true
+        });
+    };
+
     // Busca oficial => troca de filtro ou de página
     useEffect(() => {
 
@@ -203,7 +213,7 @@ export function MinhasSolicitacoes({ usuario, dadosUsuario, carregarUsuario }) {
 
     }, [instrutorId, filtroStatus, pagina, acoesEmAndamento]);
 
-    const aceitar = async (id) => {
+    const aceitar = async (solicitacaoId, usuarioId) => {
 
         setConfirmacaoPendente(null);
 
@@ -211,7 +221,7 @@ export function MinhasSolicitacoes({ usuario, dadosUsuario, carregarUsuario }) {
         // prev = estado atual do state => Set { 10, 25 }
         // new Set(prev) => Cria um novo Set copiando o anterior => Set { 10, 25 }
         // .add(id) => Adiciona o ID ao Set => Set { 10, 25, 42 }
-        setAcoesEmAndamento((prev) => new Set(prev).add(id));
+        setAcoesEmAndamento((prev) => new Set(prev).add(solicitacaoId));
 
         // prev = estado atual do state solicitacoes => ultimo array de solicitacoes vindo do bd
         // .map => percorre as solicitacoes do array
@@ -223,10 +233,10 @@ export function MinhasSolicitacoes({ usuario, dadosUsuario, carregarUsuario }) {
         // ...s => spread operator => "abre" o objeto s e copia todas as suas propriedades pra dentro de um objeto novo
         // status: "aceita" => sobrescreve essa propriedade específica com o novo valor.
         setSolicitacoes((prev) => prev.map((s) => (
-            s.id === id ? { ...s, status: "aceita" } : s
+            s.id === solicitacaoId ? { ...s, status: "aceita" } : s
         )));
 
-        const resposta = await axios.put(`/api/solicitacoes/${id}`, {
+        const resposta = await axios.put(`/api/solicitacoes/${solicitacaoId}`, {
             status: "ACEITA"
         }, {
             validateStatus: () => true,
@@ -234,14 +244,26 @@ export function MinhasSolicitacoes({ usuario, dadosUsuario, carregarUsuario }) {
         });
 
         if (resposta.status === 200) {
-            handleEdicaoSucesso('Mensagem aceita com sucesso!');
+            handleEdicaoSucesso('Solicitação aceita com sucesso!');
             await buscarSolicitacoes({ silencioso: true });
+
+            const respostaContato = await criarContato(usuarioId);
+            if(respostaContato.status === 200){
+                await buscarContatos({ silencioso: true });
+            }else{
+                const mensagemContato = extrairMsgErro(
+                    respostaContato.data?.Erro, 
+                    'Solicitação aceita, mas não foi possível abrir a conversa agora. Atualize a página para tentar novamente.'
+                );
+                handleErro(mensagemContato);
+            }
+
         }
 
         if (resposta.status === 422) {
-            setSolicitacoes((prev) => prev.map((s) => (s.id === id ? { ...s, status: "pendente" } : s)));
-            const mensagem = extrairMsgErro(resposta.data?.Erro, 'Não foi possível aceitar a solicitação.');
-            handleErro(mensagem);
+            setSolicitacoes((prev) => prev.map((s) => (s.id === solicitacaoId ? { ...s, status: "pendente" } : s)));
+            const mensagemSolicitacao = extrairMsgErro(resposta.data?.Erro, 'Não foi possível aceitar a solicitação.');
+            handleErro(mensagemSolicitacao);
         }
 
         // Depois que o post terminou
@@ -250,7 +272,7 @@ export function MinhasSolicitacoes({ usuario, dadosUsuario, carregarUsuario }) {
             // Faz uma copia do set atual
             const novo = new Set(prev);
             // Tira o id da solicitacao, n esta mais em andamento
-            novo.delete(id);
+            novo.delete(solicitacaoId);
             // Faz setAcoesEmAndamento(novo)
             return novo;
 
@@ -325,6 +347,7 @@ export function MinhasSolicitacoes({ usuario, dadosUsuario, carregarUsuario }) {
                     recusar={recusar}
                     fotosComErro={fotosComErro}
                     marcarFotoComErro={marcarFotoComErro}
+                    acoesEmAndamento={acoesEmAndamento}
                 />
 
                 {!carregando && (

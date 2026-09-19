@@ -91,6 +91,22 @@ $rota->adicionar('POST','/pusher/auth','PusherController::autenticar','logado');
 $rota->adicionar('GET','/solicitacoes/{pagina}','SolicitacaoController::listarTodas','logado');
 // Aceita/Recusa solicitações de contato
 $rota->adicionar('PUT','/solicitacoes/{id}','SolicitacaoController::atualizarStatus','instrutor');
+// Criação de Contato
+$rota->adicionar('POST','/contatos','ContatoController::criarContato','instrutor');
+// Retorna todos os contatos de um usuario
+$rota->adicionar('GET','/contatos','ContatoController::listarTodos','logado');
+// Retorna todos as mensagens de um determinado contato
+$rota->adicionar('GET','/mensagens/{idContato}','MensagemController::listarTodas','logado');
+// Responsável por criar mensagens
+$rota->adicionar('POST','/mensagens/{idContato}','MensagemController::criarMensagem','logado');
+// Responsável por criar mensagens com arquivos
+$rota->adicionar('POST','/mensagens/arquivo/{idContato}','MensagemController::criarComArquivo','logado');
+// Responsável por editar mensagens 
+$rota->adicionar('PUT','/mensagens/{idMsg}','MensagemController::editarMensagem','logado');
+// Responsável por remover mensagens para somente para o autor
+$rota->adicionar('DELETE','/mensagens/{idMsg}/ocultar','MensagemController::ocultarMensagem','logado');
+// Responsável por remover mensagens para os dois participantes do chat
+$rota->adicionar('DELETE','/mensagens/{idMsg}','MensagemController::excluirMensagem','logado');
 
 $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 

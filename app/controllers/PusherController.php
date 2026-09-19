@@ -54,17 +54,26 @@ class PusherController{
            return $usuario['tipo'] === 'instrutor' && (int)$usuario['instrutor_id'] === (int) $matches[1];
         }
 
-        /*
+        // Canal que recebe os novos contatos dos usuários
+        if(preg_match('/^private-usuario(\d+)$/', $canal, $matches)){
 
-        // Canal do Chat
-        if(preg_match('/^private-chat-(\d+)$/', $canal, $matches)){
-            $conversaId = (int) $matches[1];
-            $chatModel = new Chat();
-            return $chatModel->checarUsuarioParticipante($usuario['id'], $conversaId);
-            // $checarUsuarioParticipante deve verificar se este usuario participa de determinada conversa
+            return $usuario['tipo'] === 'usuario' && (int)$usuario['id'] === (int) $matches[1];
+
         }
 
-        */
+        // Canal dos chats - divididos por contato
+        if(preg_match('/^private-contato(\d+)$/', $canal, $matches)){
+
+            $idContato = (int) $matches[1];
+            $idUsuario = $usuario["tipo"] === "usuario" ? $usuario["id"] : null;
+            $idInstrutor = $usuario["tipo"] === "instrutor" ? $usuario["instrutor_id"] : null;
+
+            $contato = new Contato();
+            $resultado = $contato->acharContatoDoUsuario($idContato, $idUsuario, $idInstrutor);
+
+            return $resultado !== false && !empty($resultado);
+
+        }
 
         return false;
 

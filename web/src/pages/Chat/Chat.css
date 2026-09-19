@@ -1,0 +1,190 @@
+/* =========================================================
+   Chat.css
+   Estilos de layout da página de chat + estilos verdadeiramente
+   compartilhados entre 2 ou mais components filhos (Contatos e
+   Conversa usam o mesmo campo de busca, o mesmo scroll fininho,
+   o mesmo avatar/nome de contato e o mesmo botão de ícone).
+   Os estilos específicos de cada seção estão nos .css de cada
+   component (Contatos.css, Conversa.css, ComposerChat.css,
+   PopupEdicaoMensagem.css, PopupExclusaoMensagem.css).
+   ========================================================= */
+
+/* Página inteira do chat: altura fixa entre header e footer +
+   scroll interno */
+.chat-page {
+  height: calc(
+    100dvh
+    - var(--app-header-height, 88px)
+    - var(--app-footer-height, 72px)
+    - var(--app-main-padding-y, 64px)
+  );
+  min-height: 420px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  align-items: stretch;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* Coluna direita (renderizada pelo Chat.jsx; header/mensagens vêm
+   do Conversa, rodapé vem do ComposerChat) */
+.chat-conversation {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Estado vazio (nenhum contato selecionado) */
+.chat-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-2);
+  padding: var(--space-8);
+  color: var(--text-muted);
+}
+
+.chat-empty-state svg {
+  color: var(--color-gray-200);
+  margin-bottom: var(--space-2);
+}
+
+.chat-empty-state__title {
+  margin: 0;
+  font-size: var(--text-xl);
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.chat-empty-state__subtitle {
+  margin: 0;
+  max-width: 32ch;
+}
+
+/* =========================
+   COMPARTILHADO: campo de busca
+   (usado pelo Contatos na busca de conversa, e pelo Conversa na
+   busca de mensagens dentro da conversa)
+   ========================= */
+
+.chat-search-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.85rem;
+  background: var(--color-gray-100);
+}
+
+.chat-search-field svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.chat-search-field input {
+  border: 0;
+  background: transparent;
+  width: 100%;
+  font: inherit;
+  color: var(--text);
+}
+
+.chat-search-field input:focus {
+  outline: none;
+}
+
+.chat-search-field input::placeholder {
+  color: #9aa0a6;
+}
+
+/* =========================
+   COMPARTILHADO: scroll discreto
+   (lista de contatos no Contatos, corpo de mensagens no Conversa)
+   ========================= */
+
+.chat-scroll {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--color-gray-200) transparent; /* Firefox */
+}
+
+.chat-scroll::-webkit-scrollbar {
+  width: 6px; /* Chrome, Edge, Safari */
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-gray-200);
+  border-radius: 999px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* =========================
+   COMPARTILHADO: avatar + nome de contato
+   (linha da lista no Contatos, cabeçalho da conversa no Conversa —
+   cada um sobrescreve o tamanho/fonte que precisar no seu próprio
+   arquivo .css)
+   ========================= */
+
+.chat-contact__avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-primary);
+}
+
+.chat-contact__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.chat-contact__name {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--color-primary-dark);
+}
+
+/* =========================
+   COMPARTILHADO: botão de ícone redondo
+   (busca no cabeçalho do Conversa; anexar/enviar/calendário/seleção
+   no ComposerChat)
+   ========================= */
+
+.chat-icon-btn {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: var(--color-gray-700);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.chat-icon-btn:hover {
+  background: var(--color-gray-200);
+  color: var(--color-primary-dark);
+}

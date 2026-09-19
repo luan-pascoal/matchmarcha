@@ -11,6 +11,7 @@ export function ListaSolicitacoes({
     recusar,
     fotosComErro,
     marcarFotoComErro,
+    acoesEmAndamento
 }) {
 
     const IconClock = (p) => (
@@ -80,6 +81,7 @@ export function ListaSolicitacoes({
                                 cancelarConfirmacao={cancelarConfirmacao}
                                 aceitar={aceitar}
                                 recusar={recusar}
+                                emAndamento={acoesEmAndamento.has(item.id)}
                             />
                         </div>
                     </div>

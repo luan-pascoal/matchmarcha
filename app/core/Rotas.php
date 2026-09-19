@@ -19,7 +19,9 @@ class Rotas {
         "NovaSenhaController",
         "EsqueciSenhaController",
         "SolicitacaoController",
-        "PusherController"
+        "PusherController",
+        "ContatoController",
+        "MensagemController"
     ]; 
 
     public function adicionar($metodo, $rota, $chamada, $restricaoTipo)
@@ -210,9 +212,9 @@ class Rotas {
 
         // Se tiver upload de arquivo
         if (!empty($_FILES)) {
-
-            // Salva arquivo enviado
-            $data['foto'] = $_FILES['foto'];
+            foreach ($_FILES as $campo => $arquivo) {
+                $data[$campo] = $arquivo;
+            }
         }
 
         return $data;

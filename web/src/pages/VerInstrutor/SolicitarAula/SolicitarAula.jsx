@@ -62,7 +62,6 @@ export function SolicitarAula({ aberto, onFechar, handleSolicitarAula, cidades, 
         if (resposta.status === 200 && resposta.data.Sucesso === true) {
             setArrayErrosBackend([]);
             handleSolicitarAula("Solicitação enviada com sucesso!");
-            // await buscarSolicitações();
             return;
         }
 

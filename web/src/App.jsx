@@ -12,6 +12,7 @@ import { MeusVeiculos } from './pages/MeusVeiculos/MeusVeiculos';
 import { EsqueciSenha } from './pages/EsqueciSenha/EsqueciSenha';
 import { NovaSenha } from './pages/NovaSenha/NovaSenha';
 import { MinhasSolicitacoes } from './pages/MinhasSolicitacoes/MinhasSolicitacoes';
+import { Chat } from './pages/Chat/Chat';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -25,6 +26,8 @@ function App() {
   const [cores, setCores] = useState([]);
   const [veiculos, setVeiculos] = useState([]);
   const [erroVeiculos, setErroVeiculos] = useState(false);
+  const [contatos, setContatos] = useState([]);
+  const [erroContatos, setErroContatos] = useState('');
 
   // Busca os dados completos do perfil pelo ID e atualiza o state dadosUsuario
   const buscarDadosUsuario = async (id, tipo) => {
@@ -82,6 +85,20 @@ function App() {
     }
   };
 
+  const buscarContatos = async ({ silencioso = false } = {}) => {
+    const resposta = await axios.get('/api/contatos', {
+      validateStatus: () => true,
+      withCredentials: true,
+    });
+    if(resposta.status === 200){
+      setContatos(resposta.data.Sucesso.contatos);
+      setErroContatos('');
+    } else if (!silencioso) {
+      setErroContatos('Não foi possível carregar os contatos');
+      setContatos([]);
+    }
+  }
+
   // Verifica se o usuario logado é um instrutor, se sim já carrega os seus veiculos 
   const carregarVeiculos = async (tipoUsuario, id) => {
     if (tipoUsuario !== 'instrutor') return;
@@ -127,13 +144,13 @@ function App() {
   return (
     <Routes>
       <Route index element={
-        <HomePage 
-          usuario={usuario} 
-          dadosUsuario={dadosUsuario} 
+        <HomePage
+          usuario={usuario}
+          dadosUsuario={dadosUsuario}
           carregarUsuario={carregarUsuario}
-          cidades={cidades} 
+          cidades={cidades}
         />
-      } 
+      }
       />
 
       <Route path="/cadastro-aluno" element={
@@ -159,11 +176,11 @@ function App() {
       <Route
         path="/instrutor/:id"
         element={
-          <VerInstrutor 
-            usuario={usuario} 
-            dadosUsuario={dadosUsuario} 
-            carregarUsuario={carregarUsuario} 
-            cidades={cidades} 
+          <VerInstrutor
+            usuario={usuario}
+            dadosUsuario={dadosUsuario}
+            carregarUsuario={carregarUsuario}
+            cidades={cidades}
           />
         }
       />
@@ -207,7 +224,7 @@ function App() {
         }
       />
 
-      <Route 
+      <Route
         path="/esqueci-senha"
         element={
           <PrivateRoute usuario={usuario} tipo="visitante">
@@ -216,7 +233,7 @@ function App() {
         }
       />
 
-      <Route 
+      <Route
         path="/nova-senha"
         element={
           <PrivateRoute usuario={usuario} tipo="visitante">
@@ -225,19 +242,36 @@ function App() {
         }
       />
 
-      <Route 
+      <Route
         path="/minhas-solicitacoes"
         element={
           <PrivateRoute usuario={usuario} tipo="instrutor">
-            <MinhasSolicitacoes 
+            <MinhasSolicitacoes
               usuario={usuario}
               dadosUsuario={dadosUsuario}
               carregarUsuario={carregarUsuario}
-              />
+              buscarContatos={buscarContatos}
+            />
           </PrivateRoute>
         }
       />
 
+      <Route
+        path="/chat"
+        element={
+          <PrivateRoute usuario={usuario} tipo="logado">
+            <Chat
+              usuario={usuario}
+              dadosUsuario={dadosUsuario}
+              carregarUsuario={carregarUsuario}
+              contatos={contatos}
+              erroContatos={erroContatos}
+              buscarContatos={buscarContatos}
+            />
+          </PrivateRoute>
+        }
+
+      />
 
       <Route path="/mensagens" element={<ErrorPage tipo="desenvolvimento" />} />
       <Route path="/minhas-aulas" element={<ErrorPage tipo="desenvolvimento" />} />

@@ -7,6 +7,7 @@ export function SolicitacaoAcoes({
     cancelarConfirmacao,
     aceitar,
     recusar,
+    emAndamento
 }) {
 
     const IconCheck = (p) => (
@@ -43,9 +44,10 @@ export function SolicitacaoAcoes({
                                 type="button"
                                 className={`btn btn--square btn--sm ${confirmacaoPendente.tipo === 'aceitar' ? 'btn--primary' : 'btn--danger'
                                     }`}
+                                disabled={emAndamento}
                                 onClick={() =>
                                     confirmacaoPendente.tipo === 'aceitar'
-                                        ? aceitar(item.id)
+                                        ? aceitar(item.id, item.usuario_id)
                                         : recusar(item.id)
                                 }
                             >

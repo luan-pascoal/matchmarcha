@@ -88,7 +88,7 @@ export function HomePage({ usuario, dadosUsuario, carregarUsuario, cidades }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setBuscaDebounced(busca);
-    }, 500)
+    }, 200)
     return () => clearTimeout(timer);
   }, [busca]);
 
