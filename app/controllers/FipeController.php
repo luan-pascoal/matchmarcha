@@ -12,13 +12,14 @@ class FipeController {
 
         $url = $this->fipe_base . $caminho;
 
+    
         $opcoes = [
             "http" => [
                 "method" => "GET",
                 "timeout" => 10,
                 "header" => implode("\r\n", [
                     'Accept: application/json',
-                    'X-Subscription-Token: ' . FIPE_TOKEN,
+                    'X-Subscription-Token: ' . $_ENV['FIPE_TOKEN'],
                 ]),
             ]
         ];

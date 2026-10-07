@@ -9,7 +9,6 @@ define ("db_host", "localhost");
 define ("db_user", "root");
 define ("db_password", "");
 define ("db_name", "login_test");
-define ("FIPE_TOKEN", "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI3YWI2NTY3Ni0yYmRmLTQ4ZmItYTE5ZS0zMWVhZjI4MTA4NWQiLCJlbWFpbCI6Indvbmd0b21hczU2NEBnbWFpbC5jb20iLCJpYXQiOjE3ODA1MzkzMDN9.dhaoo-35BjhHh5pLdn1VvcTtLl-35mIqHUQctiwoJTg");
 
 /* 
 
