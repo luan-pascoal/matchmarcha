@@ -76,7 +76,6 @@ export function Pagetop({
                     </div>
                 </div>
 
-                <div className="divider--strong" role="separator" />
             </div>
         </>
     );

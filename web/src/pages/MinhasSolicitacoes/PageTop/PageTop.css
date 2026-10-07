@@ -106,14 +106,3 @@
   pointer-events: none;
 }
 
-/* --------------------------------------------------------------------------
-   [Divisores]
-   Mais fina que antes (3px -> 1.5px), fica logo abaixo do header.
--------------------------------------------------------------------------- */
-.divider--strong {
-  width: 100%;
-  height: 1.5px;
-  background: var(--color-primary-dark);
-  border: 0;
-  opacity: 0.9;
-}
