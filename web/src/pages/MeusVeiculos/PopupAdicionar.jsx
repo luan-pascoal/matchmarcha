@@ -114,6 +114,7 @@ export function PopupAdicionar({ recarregarVeiculos, aberto, onFechar, cores, ha
             setArrayErrosBackend([]);
             await recarregarVeiculos(dadosUsuario.idIns);
             handleAdicaoSucesso("Veículo cadastrado com sucesso!");
+            resetar();
             return;
         }
 
@@ -121,6 +122,7 @@ export function PopupAdicionar({ recarregarVeiculos, aberto, onFechar, cores, ha
             const errosBackend = resposta.data.Erro;
             const array = Object.entries(errosBackend);
             setArrayErrosBackend(array);
+            resetar();
             return;
         }
     };
