@@ -147,14 +147,18 @@ CREATE TABLE IF NOT EXISTS Tb_Mensagem (
 -- TABELA AULA
 -- =========================
 CREATE TABLE IF NOT EXISTS Tb_Aula (
-    Au_id          INT AUTO_INCREMENT PRIMARY KEY,
-    Au_data        DATE    NOT NULL,
-    Au_horario     TIME    NOT NULL,
-    Au_categoria   CHAR(1) NOT NULL,
-    Au_cidadeid    INT     NOT NULL,
-    Au_usuarioid   INT     NOT NULL,
-    Au_instrutorid INT     NOT NULL,
-    Au_status      VARCHAR(16) NOT NULL DEFAULT 'AGENDADA',
+    Au_id              INT AUTO_INCREMENT PRIMARY KEY,
+    Au_data            DATE        NOT NULL,
+    Au_horario_inicio  TIME        NOT NULL,
+    Au_horario_fim     TIME        NOT NULL,
+    Au_categoria       VARCHAR(2)  NOT NULL,
+    Au_cidadeid        INT         NOT NULL,
+    Au_usuarioid       INT         NOT NULL,
+    Au_instrutorid     INT         NOT NULL,
+    Au_status          VARCHAR(16) NOT NULL DEFAULT 'AGENDADA',
+
+    CONSTRAINT ck_aula_horario
+        CHECK (Au_horario_fim > Au_horario_inicio),
 
     CONSTRAINT fk_aula_cidade
         FOREIGN KEY (Au_cidadeid)
@@ -168,7 +172,6 @@ CREATE TABLE IF NOT EXISTS Tb_Aula (
         FOREIGN KEY (Au_instrutorid)
         REFERENCES Tb_Instrutor(Ins_id)
 );
-
 
 -- =========================
 -- TABELA SOLICITACAO AULA
