@@ -1,5 +1,5 @@
 import Carro from '../../assets/images/icons/carro.png';
-import Moto from '../../assets/images/icons/Moto.png';
+import Moto from '../../assets/images/icons/moto.png';
 
 export function CardVeiculo({ veiculo, onEditar, onExcluir }) {
 

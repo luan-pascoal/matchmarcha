@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { MsgErrosBackEnd } from "../../components/MsgErrosBackEnd";
 import { Popup } from "../../components/popup/Popup";
 import Carro from '../../assets/images/icons/carro.png';
-import Moto from '../../assets/images/icons/Moto.png';
+import Moto from '../../assets/images/icons/moto.png';
 import axios from 'axios';
 import './MeusVeiculos.css';
 

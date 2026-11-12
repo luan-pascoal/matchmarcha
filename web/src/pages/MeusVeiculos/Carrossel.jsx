@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { CardAdicionar } from './CardAdicionar';
 import { CardVeiculo } from './CardVeiculo';
 import Voltar from '../../assets/images/icons/voltar.png';
-import Proximo from '../../assets/images/icons/Proximo.png';
+import Proximo from '../../assets/images/icons/proximo.png';
 
 export function Carrossel({ veiculos, erroVeiculos, onAdicionar, onEditar, onExcluir }) {
 
