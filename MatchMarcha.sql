@@ -4,19 +4,7 @@
 CREATE DATABASE IF NOT EXISTS MatchMarcha
     CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- ============================================================
--- Match Marcha - Criação do banco de dados e carga inicial
--- ============================================================
-CREATE DATABASE IF NOT EXISTS MatchMarcha
-    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 USE MatchMarcha;
-
-SET NAMES utf8mb4;
-
--- ------------------------------------------------------------
--- CRIAÇÃO DAS TABELAS
--- ------------------------------------------------------------
 
 SET NAMES utf8mb4;
 
@@ -26,15 +14,6 @@ SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS Tb_Usuario (
     Usu_id           INT AUTO_INCREMENT PRIMARY KEY,
-    Usu_nome         VARCHAR(255) NOT NULL,
-    Usu_email        VARCHAR(255) NOT NULL UNIQUE,
-    Usu_senha        VARCHAR(255) NOT NULL,
-    Usu_cpf          VARCHAR(16)  NOT NULL UNIQUE,
-    Usu_genero       CHAR(1)      NOT NULL,
-    Usu_foto         VARCHAR(255) NOT NULL,
-    Usu_datacriacao  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    Usu_statusonline VARCHAR(16)  NOT NULL,
-    Usu_ultimaonline TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
     Usu_nome         VARCHAR(255) NOT NULL,
     Usu_email        VARCHAR(255) NOT NULL UNIQUE,
     Usu_senha        VARCHAR(255) NOT NULL,
@@ -64,7 +43,6 @@ CREATE TABLE IF NOT EXISTS Tb_Modelo (
     Mod_marcaid INT          NOT NULL,
     CONSTRAINT fk_modelo_marca
         FOREIGN KEY (Mod_marcaid) REFERENCES Tb_Marca(Mrc_id)
-        FOREIGN KEY (Mod_marcaid) REFERENCES Tb_Marca(Mrc_id)
 );
 
 CREATE TABLE IF NOT EXISTS Tb_Cor (
@@ -82,16 +60,13 @@ CREATE TABLE IF NOT EXISTS Tb_Instrutor (
     Ins_usuarioid INT          NOT NULL,
     Ins_cnh       VARCHAR(16)  NOT NULL UNIQUE,
     Ins_aulapreco FLOAT        NOT NULL,
-    Ins_aulatipo  CHAR(1)      NOT NULL,
+    Ins_aulatipo  CHAR(2)      NOT NULL,
     Ins_cidadeid  INT          NOT NULL,
     Ins_descricao VARCHAR(500) NULL,
     CONSTRAINT fk_instrutor_usuario
         FOREIGN KEY (Ins_usuarioid) REFERENCES Tb_Usuario(Usu_id)
         ON DELETE CASCADE,
-        FOREIGN KEY (Ins_usuarioid) REFERENCES Tb_Usuario(Usu_id)
-        ON DELETE CASCADE,
     CONSTRAINT fk_instrutor_cidade
-        FOREIGN KEY (Ins_cidadeid) REFERENCES Tb_Cidade(Cid_id)
         FOREIGN KEY (Ins_cidadeid) REFERENCES Tb_Cidade(Cid_id)
 );
 
@@ -102,10 +77,7 @@ CREATE TABLE IF NOT EXISTS Tb_InstrutorPeriodo (
     CONSTRAINT fk_instrutorperiodo_instrutor
         FOREIGN KEY (Inp_instrutorid) REFERENCES Tb_Instrutor(Ins_id)
         ON DELETE CASCADE,
-        FOREIGN KEY (Inp_instrutorid) REFERENCES Tb_Instrutor(Ins_id)
-        ON DELETE CASCADE,
     CONSTRAINT fk_instrutorperiodo_periodo
-        FOREIGN KEY (Inp_periodoid) REFERENCES Tb_Periodo(Per_id)
         FOREIGN KEY (Inp_periodoid) REFERENCES Tb_Periodo(Per_id)
 );
 
@@ -113,17 +85,12 @@ CREATE TABLE IF NOT EXISTS Tb_Contato (
     Ctt_id          INT AUTO_INCREMENT PRIMARY KEY,
     Ctt_datacriacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     Ctt_datadelete  TIMESTAMP NULL DEFAULT NULL,
-    Ctt_datadelete  TIMESTAMP NULL DEFAULT NULL,
     Ctt_usuarioid   INT       NOT NULL,
     Ctt_instrutorid INT       NOT NULL,
     CONSTRAINT fk_contato_usuario
         FOREIGN KEY (Ctt_usuarioid) REFERENCES Tb_Usuario(Usu_id)
         ON DELETE CASCADE,
-        FOREIGN KEY (Ctt_usuarioid) REFERENCES Tb_Usuario(Usu_id)
-        ON DELETE CASCADE,
     CONSTRAINT fk_contato_instrutor
-        FOREIGN KEY (Ctt_instrutorid) REFERENCES Tb_Instrutor(Ins_id)
-        ON DELETE CASCADE
         FOREIGN KEY (Ctt_instrutorid) REFERENCES Tb_Instrutor(Ins_id)
         ON DELETE CASCADE
 );
@@ -131,10 +98,7 @@ CREATE TABLE IF NOT EXISTS Tb_Contato (
 CREATE TABLE IF NOT EXISTS Tb_Mensagem (
     Msg_id              INT AUTO_INCREMENT PRIMARY KEY,
     Msg_texto           VARCHAR(1024) NULL DEFAULT NULL,
-    Msg_texto           VARCHAR(1024) NULL DEFAULT NULL,
     Msg_remetente       VARCHAR(32)   NOT NULL,
-    Msg_anexocaminho    VARCHAR(255)  NULL DEFAULT NULL,
-    Msg_anexotipo       VARCHAR(16)   NULL DEFAULT NULL,
     Msg_anexocaminho    VARCHAR(255)  NULL DEFAULT NULL,
     Msg_anexotipo       VARCHAR(16)   NULL DEFAULT NULL,
     Msg_datacriacao     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -142,13 +106,8 @@ CREATE TABLE IF NOT EXISTS Tb_Mensagem (
     Msg_datadelete      TIMESTAMP     NULL DEFAULT NULL,
     Msg_ocultoUsuario   TIMESTAMP     NULL DEFAULT NULL,
     Msg_ocultoInstrutor TIMESTAMP     NULL DEFAULT NULL,
-    Msg_datadelete      TIMESTAMP     NULL DEFAULT NULL,
-    Msg_ocultoUsuario   TIMESTAMP     NULL DEFAULT NULL,
-    Msg_ocultoInstrutor TIMESTAMP     NULL DEFAULT NULL,
     Msg_contatoid       INT           NOT NULL,
     CONSTRAINT fk_mensagem_contato
-        FOREIGN KEY (Msg_contatoid) REFERENCES Tb_Contato(Ctt_id)
-        ON DELETE CASCADE
         FOREIGN KEY (Msg_contatoid) REFERENCES Tb_Contato(Ctt_id)
         ON DELETE CASCADE
 );
@@ -163,34 +122,19 @@ CREATE TABLE IF NOT EXISTS Tb_Aula (
     Au_usuarioid      INT         NOT NULL,
     Au_instrutorid    INT         NOT NULL,
     Au_status         VARCHAR(16) NOT NULL DEFAULT 'AGENDADA',
-    Au_id             INT AUTO_INCREMENT PRIMARY KEY,
-    Au_data           DATE        NOT NULL,
-    Au_horario_inicio TIME        NOT NULL,
-    Au_horario_fim    TIME        NOT NULL,
-    Au_categoria      VARCHAR(2)  NOT NULL,
-    Au_cidadeid       INT         NOT NULL,
-    Au_usuarioid      INT         NOT NULL,
-    Au_instrutorid    INT         NOT NULL,
-    Au_status         VARCHAR(16) NOT NULL DEFAULT 'AGENDADA',
     CONSTRAINT ck_aula_horario
         CHECK (Au_horario_fim > Au_horario_inicio),
     CONSTRAINT fk_aula_cidade
         FOREIGN KEY (Au_cidadeid) REFERENCES Tb_Cidade(Cid_id),
-        FOREIGN KEY (Au_cidadeid) REFERENCES Tb_Cidade(Cid_id),
     CONSTRAINT fk_aula_usuario
-        FOREIGN KEY (Au_usuarioid) REFERENCES Tb_Usuario(Usu_id)
-        ON DELETE CASCADE,
         FOREIGN KEY (Au_usuarioid) REFERENCES Tb_Usuario(Usu_id)
         ON DELETE CASCADE,
     CONSTRAINT fk_aula_instrutor
         FOREIGN KEY (Au_instrutorid) REFERENCES Tb_Instrutor(Ins_id)
         ON DELETE CASCADE
-        FOREIGN KEY (Au_instrutorid) REFERENCES Tb_Instrutor(Ins_id)
-        ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Tb_SolicitacaoAula (
-    Slc_id          INT AUTO_INCREMENT PRIMARY KEY,
     Slc_id          INT AUTO_INCREMENT PRIMARY KEY,
     Slc_categoria   VARCHAR(16) NOT NULL,
     Slc_periodo     VARCHAR(16) NOT NULL,
@@ -201,15 +145,10 @@ CREATE TABLE IF NOT EXISTS Tb_SolicitacaoAula (
     CONSTRAINT fk_solicitacao_usuario
         FOREIGN KEY (Slc_usuarioid) REFERENCES Tb_Usuario(Usu_id)
         ON DELETE CASCADE,
-        FOREIGN KEY (Slc_usuarioid) REFERENCES Tb_Usuario(Usu_id)
-        ON DELETE CASCADE,
     CONSTRAINT fk_solicitacao_instrutor
         FOREIGN KEY (Slc_instrutorid) REFERENCES Tb_Instrutor(Ins_id)
         ON DELETE CASCADE,
-        FOREIGN KEY (Slc_instrutorid) REFERENCES Tb_Instrutor(Ins_id)
-        ON DELETE CASCADE,
     CONSTRAINT fk_solicitacao_cidade
-        FOREIGN KEY (Slc_cidadeid) REFERENCES Tb_Cidade(Cid_id)
         FOREIGN KEY (Slc_cidadeid) REFERENCES Tb_Cidade(Cid_id)
 );
 
@@ -220,8 +159,6 @@ CREATE TABLE IF NOT EXISTS Tb_RedefinirSenha (
     Rdf_dataexpiracao TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     Rdf_usuarioid     INT          NOT NULL,
     CONSTRAINT fk_redefinir_usuario
-        FOREIGN KEY (Rdf_usuarioid) REFERENCES Tb_Usuario(Usu_id)
-        ON DELETE CASCADE
         FOREIGN KEY (Rdf_usuarioid) REFERENCES Tb_Usuario(Usu_id)
         ON DELETE CASCADE
 );
@@ -238,9 +175,7 @@ CREATE TABLE IF NOT EXISTS Tb_Veiculo (
     Vcl_instrutorid INT         NOT NULL,
     CONSTRAINT fk_veiculo_cor
         FOREIGN KEY (Vcl_corid) REFERENCES Tb_Cor(Cor_id),
-        FOREIGN KEY (Vcl_corid) REFERENCES Tb_Cor(Cor_id),
     CONSTRAINT fk_veiculo_modelo
-        FOREIGN KEY (Vcl_modeloid) REFERENCES Tb_Modelo(Mod_id),
         FOREIGN KEY (Vcl_modeloid) REFERENCES Tb_Modelo(Mod_id),
     CONSTRAINT fk_veiculo_instrutor
         FOREIGN KEY (Vcl_instrutorid) REFERENCES Tb_Instrutor(Ins_id)
