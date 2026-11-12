@@ -13,8 +13,34 @@ import { EsqueciSenha } from './pages/EsqueciSenha/EsqueciSenha';
 import { NovaSenha } from './pages/NovaSenha/NovaSenha';
 import { MinhasSolicitacoes } from './pages/MinhasSolicitacoes/MinhasSolicitacoes';
 import { Chat } from './pages/Chat/Chat';
-import { useState, useEffect } from 'react';
+import { MinhasAulas } from './pages/MinhasAulas/MinhasAulas';
+import { useState, useEffect, useCallback} from 'react';
 import axios from 'axios';
+
+function gerarAulasMock() {
+  
+  // Data local -> "AAAA-MM-DD", sem passar por UTC (evita deslocar o dia)
+  const chaveData = (data) => {
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+    const dia = String(data.getDate()).padStart(2, "0");
+    return `${data.getFullYear()}-${mes}-${dia}`;
+  };
+
+  const hoje = new Date();
+  const dataRelativa = (dias) =>
+    chaveData(new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + dias));
+  const jundiai = { id: 1, nome: "Jundiaí", uf: "SP" };
+
+  return [
+    { Au_id: 1, Au_data: dataRelativa(-3), Au_horario_inicio: "09:00", Au_horario_fim: "10:00", Au_categoria: "B", Au_status: "CONCLUIDA", cidade: jundiai, outro_id: 10, outro_nome: "João Silva" },
+    { Au_id: 2, Au_data: dataRelativa(0),  Au_horario_inicio: "14:00", Au_horario_fim: "15:00", Au_categoria: "A",  Au_status: "AGENDADA",  cidade: jundiai, outro_id: 11, outro_nome: "Maria Souza" },
+    { Au_id: 3, Au_data: dataRelativa(0),  Au_horario_inicio: "08:00", Au_horario_fim: "09:00", Au_categoria: "B",  Au_status: "AGENDADA",  cidade: jundiai, outro_id: 10, outro_nome: "João Silva" },
+    { Au_id: 4, Au_data: dataRelativa(0),  Au_horario_inicio: "16:00", Au_horario_fim: "17:00", Au_categoria: "AB", Au_status: "CANCELADA", cidade: jundiai, outro_id: 12, outro_nome: "Pedro Lima" },
+    { Au_id: 5, Au_data: dataRelativa(2),  Au_horario_inicio: "10:00", Au_horario_fim: "11:30", Au_categoria: "A",  Au_status: "AGENDADA",  cidade: jundiai, outro_id: 11, outro_nome: "Maria Souza" },
+    { Au_id: 6, Au_data: dataRelativa(5),  Au_horario_inicio: "13:00", Au_horario_fim: "14:00", Au_categoria: "B",  Au_status: "AGENDADA",  cidade: jundiai, outro_id: 10, outro_nome: "João Silva" },
+    { Au_id: 7, Au_data: dataRelativa(5),  Au_horario_inicio: "15:00", Au_horario_fim: "16:00", Au_categoria: "B",  Au_status: "AGENDADA",  cidade: jundiai, outro_id: 12, outro_nome: "Pedro Lima" },
+  ];
+}
 
 function App() {
 
@@ -28,6 +54,8 @@ function App() {
   const [erroVeiculos, setErroVeiculos] = useState(false);
   const [contatos, setContatos] = useState([]);
   const [erroContatos, setErroContatos] = useState('');
+  const [aulas, setAulas] = useState(gerarAulasMock);
+  const [erroAulas, setErroAulas] = useState('');
 
   // Busca os dados completos do perfil pelo ID e atualiza o state dadosUsuario
   const buscarDadosUsuario = async (id, tipo) => {
@@ -85,7 +113,7 @@ function App() {
     }
   };
 
-  const buscarContatos = async ({ silencioso = false } = {}) => {
+  const buscarContatos = useCallback(async ({ silencioso = false } = {}) => {
     const resposta = await axios.get('/api/contatos', {
       validateStatus: () => true,
       withCredentials: true,
@@ -97,7 +125,7 @@ function App() {
       setErroContatos('Não foi possível carregar os contatos');
       setContatos([]);
     }
-  }
+  }, []);
 
   // Verifica se o usuario logado é um instrutor, se sim já carrega os seus veiculos 
   const carregarVeiculos = async (tipoUsuario, id) => {
@@ -133,6 +161,21 @@ function App() {
       setCores([]);
     }
   };
+
+  const buscarAulas = useCallback(async( {silencioso = false} = {}) => {
+    const resposta = await axios.get('/api/calendario', {
+      validateStatus: () => true,
+      withCredentials: true
+    });
+    if(resposta.status === 200){
+      setAulas(resposta.data.Sucesso.aulas);
+      setErroAulas('');
+    }else if(!silencioso){
+      setErroAulas('Não foi possível carregar as aulas');
+      setAulas([]);
+    }
+  }, []);
+
 
   // Roda uma vez na montagem do componente para inicializar a sessão
   useEffect(() => {
@@ -267,19 +310,35 @@ function App() {
               contatos={contatos}
               erroContatos={erroContatos}
               buscarContatos={buscarContatos}
+              aulas={aulas}
+              buscarAulas={buscarAulas}
+              cidades={cidades}
             />
           </PrivateRoute>
         }
-
       />
 
-      <Route path="/mensagens" element={<ErrorPage tipo="desenvolvimento" />} />
-      <Route path="/minhas-aulas" element={<ErrorPage tipo="desenvolvimento" />} />
+      <Route
+        path="/minhas-aulas"
+        element={
+          <PrivateRoute usuario={usuario} tipo="logado">
+            <MinhasAulas
+              usuario={usuario}
+              dadosUsuario={dadosUsuario}
+              carregarUsuario={carregarUsuario}
+              contatos={contatos}
+              buscarContatos={buscarContatos}
+              cidades={cidades}
+              aulas={aulas}
+              buscarAulas={buscarAulas}
+            />
+          </PrivateRoute>
+        }
+      />
+
+
       <Route path="/ajuda" element={<ErrorPage tipo="desenvolvimento" />} />
       <Route path="/termos" element={<ErrorPage tipo="desenvolvimento" />} />
-
-      <Route path="/esqueci-senha" element={<ErrorPage tipo="desenvolvimento" />} />
-
       <Route path="*" element={<ErrorPage tipo="404" />} />
     </Routes>
   );

@@ -9,14 +9,24 @@ import { Conversa } from "./Conversa/Conversa.jsx";
 import { ComposerChat } from "./ComposerChat/ComposerChat.jsx";
 import { PopupEdicaoMensagem } from "./PopupEdicaoMensagem/PopupEdicaoMensagem.jsx";
 import { PopupExclusaoMensagem } from "./PopupExclusaoMensagem/PopupExclusaoMensagem.jsx";
+import { PopupCriacaoAula } from "../MinhasAulas/PopupCriacaoAula/PopupCriacaoAula.jsx";
 import { IconChatEmpty } from "./IconesChat.jsx";
 import "./Chat.css";
 
-const LIMITE_TAMANHO_IMAGEM = 2 * 1024 * 1024;      // 2MB
-const LIMITE_TAMANHO_DOCUMENTO = 10 * 1024 * 1024;  // 10MB
+const LIMITE_TAMANHO_IMAGEM = 2 * 1024 * 1024; // 2MB
+const LIMITE_TAMANHO_DOCUMENTO = 10 * 1024 * 1024; // 10MB
 
-export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarContatos, erroContatos }) {
-
+export function Chat({
+  dadosUsuario,
+  carregarUsuario,
+  usuario,
+  contatos,
+  buscarContatos,
+  erroContatos,
+  aulas,
+  buscarAulas,
+  cidades,
+}) {
   const [contatoSelecionadoId, setContatoSelecionadoId] = useState(null);
   const [mensagens, setMensagens] = useState([]);
 
@@ -29,26 +39,28 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
 
   const [anexoSelecionado, setAnexoSelecionado] = useState(null);
   const [erroAnexo, setErroAnexo] = useState([]);
-  const [legendaAnexo, setLegendaAnexo] = useState('');
+  const [legendaAnexo, setLegendaAnexo] = useState("");
 
   // States do modo de seleção/exclusão de mensagens
   const [modoSelecao, setModoSelecao] = useState(false);
-  const [mensagensSelecionadasIds, setMensagensSelecionadasIds] = useState(new Set());
+  const [mensagensSelecionadasIds, setMensagensSelecionadasIds] = useState(
+    new Set(),
+  );
   // Controla se o popup de remoção está aberto ou não
   const [popupExcluir, setPopupExcluir] = useState(false);
+  const [popupCriacaoAberto, setPopupCriacaoAberto] = useState(false);
 
   const inputImagemRef = useRef(null);
   const inputDocumentoRef = useRef(null);
 
   // Função responsável por buscar as mensagens
   const buscarMensagens = async (idContato) => {
-
     setCarregandoMensagens(true);
     setErroMensagens([]);
 
     const resposta = await axios.get(`/api/mensagens/${idContato}`, {
       validateStatus: () => true,
-      withCredentials: true
+      withCredentials: true,
     });
 
     if (resposta.status === 200) {
@@ -59,32 +71,29 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
     }
 
     setCarregandoMensagens(false);
-
   };
 
   const enviarArquivo = async () => {
-
-    setErroAnexo('');
+    setErroAnexo("");
 
     const formData = new FormData();
-    formData.append('anexo', anexoSelecionado.arquivo);
-    formData.append('texto', legendaAnexo.trim());
+    formData.append("anexo", anexoSelecionado.arquivo);
+    formData.append("texto", legendaAnexo.trim());
 
-    const resposta = await axios.post(`/api/mensagens/arquivo/${contatoSelecionadoId}`,
+    const resposta = await axios.post(
+      `/api/mensagens/arquivo/${contatoSelecionadoId}`,
       formData,
       {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { "Content-Type": "multipart/form-data" },
         validateStatus: () => true,
-        withCredentials: true
-      }
+        withCredentials: true,
+      },
     );
 
     if (resposta.status === 200) {
-
       const mensagemEnviada = resposta.data.Sucesso.mensagem;
 
       setMensagens((prev) => {
-
         const jaExiste = prev.some((m) => m.Msg_id === mensagemEnviada.Msg_id);
 
         if (jaExiste) return prev;
@@ -94,7 +103,6 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
 
       buscarContatos({ silencioso: true });
       cancelarAnexo();
-
     } else {
       setErroAnexo(Object.entries(resposta.data?.Erro ?? {}));
     }
@@ -117,9 +125,7 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
 
   // Alterna o estado de seleção (marcado/desmarcado) de uma mensagem
   function toggleSelecaoMensagem(msgId) {
-
     setMensagensSelecionadasIds((prev) => {
-
       const novo = new Set(prev);
 
       if (novo.has(msgId)) {
@@ -140,12 +146,10 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
 
   // Toda vez que seleciona um contato diferente, buscamos as mensagens desse contato
   useEffect(() => {
-
     if (!contatoSelecionadoId) return;
 
     buscarMensagens(contatoSelecionadoId);
-
-  }, [contatoSelecionadoId])
+  }, [contatoSelecionadoId]);
 
   // Ao renderizar o component, buscamos os contatos
   useEffect(() => {
@@ -154,7 +158,6 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
 
   // Efeito que escuta o canal private-usuario{id}
   useEffect(() => {
-
     if (usuario?.usuario?.tipo !== "usuario" || !usuario.id) return;
 
     const nomeCanal = `private-usuario${usuario.usuario.id}`;
@@ -162,31 +165,30 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
 
     const aoReceberEvento = () => {
       buscarContatos({ silencioso: true });
-    }
+    };
 
-    canal.bind('novo-contato', aoReceberEvento);
-    canal.bind('mensagem-recebida', aoReceberEvento)
+    canal.bind("novo-contato", aoReceberEvento);
+    canal.bind("mensagem-recebida", aoReceberEvento);
 
     const handleVisibility = () => {
       if (document.visibilityState === "visible") {
         buscarContatos({ silencioso: true });
       }
     };
-    document.addEventListener('visibilitychange', handleVisibility);
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
-      pusherClient.unbind('novo-contato', aoReceberEvento);
-      pusherClient.unbind('mensagem-recebida', aoReceberEvento);
+      pusherClient.unbind("novo-contato", aoReceberEvento);
+      pusherClient.unbind("mensagem-recebida", aoReceberEvento);
       pusherClient.unsubscribe(nomeCanal);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    }
-
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [usuario.usuario.tipo, usuario.usuario.id]);
 
   // Efeito que escuta o canal private-instrutor{id}
   useEffect(() => {
-
-    if (usuario?.usuario?.tipo !== "instrutor" || !usuario.usuario.instrutor_id) return;
+    if (usuario?.usuario?.tipo !== "instrutor" || !usuario.usuario.instrutor_id)
+      return;
 
     const nomeCanal = `private-instrutor${usuario.usuario.instrutor_id}`;
     const canal = pusherClient.subscribe(nomeCanal);
@@ -195,77 +197,65 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
       buscarContatos({ silencioso: true });
     };
 
-    canal.bind('mensagem-recebida', aoReceberMensagem);
+    canal.bind("mensagem-recebida", aoReceberMensagem);
 
     return () => {
-      pusherClient.unbind('mensagem-recebida', aoReceberMensagem);
+      pusherClient.unbind("mensagem-recebida", aoReceberMensagem);
       pusherClient.unsubscribe(nomeCanal);
     };
-
   }, [usuario.usuario.tipo, usuario.usuario.instrutor_id]);
 
   const contatoSelecionado = contatos.find(
-    (c) => c.Ctt_id === contatoSelecionadoId
+    (c) => c.Ctt_id === contatoSelecionadoId,
   );
 
   // Efeito que escuta o canal private-contato{id}
   useEffect(() => {
-
     if (!contatoSelecionadoId) return;
 
     const nomeCanal = `private-contato${contatoSelecionadoId}`;
     const canal = pusherClient.subscribe(nomeCanal);
 
     const aoReceberMensagem = (novaMensagem) => {
-
       setMensagens((prev) => {
-
-        const jaExiste = prev.some((m) => m.Msg_id === novaMensagem.Msg_id)
+        const jaExiste = prev.some((m) => m.Msg_id === novaMensagem.Msg_id);
 
         if (jaExiste) return prev;
 
         return [...prev, novaMensagem];
-
       });
-
     };
 
     const aoEditarMensagem = (mensagemEditada) => {
-
       setMensagens((prev) =>
-
         prev.map((m) =>
           m.Msg_id === mensagemEditada.Msg_id
             ? { ...m, Msg_texto: mensagemEditada.Msg_texto }
-            : m
-        )
-
+            : m,
+        ),
       );
     };
 
     const aoRemoverMensagem = (mensagemRemovida) => {
-
       setMensagens((prev) =>
         prev.map((m) =>
           m.Msg_id === mensagemRemovida.Msg_id
             ? { ...m, Msg_datadelete: new Date().toISOString() }
-            : m
-        )
+            : m,
+        ),
       );
-
     };
 
-    canal.bind('nova-mensagem', aoReceberMensagem);
-    canal.bind('mensagem-editada', aoEditarMensagem);
-    canal.bind('mensagem-removida', aoRemoverMensagem);
+    canal.bind("nova-mensagem", aoReceberMensagem);
+    canal.bind("mensagem-editada", aoEditarMensagem);
+    canal.bind("mensagem-removida", aoRemoverMensagem);
 
     return () => {
-      pusherClient.unbind('nova-mensagem', aoReceberMensagem);
-      pusherClient.unbind('mensagem-editada', aoEditarMensagem);
-      pusherClient.unbind('mensagem-removida', aoRemoverMensagem);
+      pusherClient.unbind("nova-mensagem", aoReceberMensagem);
+      pusherClient.unbind("mensagem-editada", aoEditarMensagem);
+      pusherClient.unbind("mensagem-removida", aoRemoverMensagem);
       pusherClient.unsubscribe(nomeCanal);
-    }
-
+    };
   }, [contatoSelecionadoId]);
 
   function marcarFotoComErro(id) {
@@ -273,17 +263,15 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
   }
 
   function srcFoto(contato) {
-
-    const temFotoValida = contato.outro_foto && !fotosComErro.has(contato.outro_id);
+    const temFotoValida =
+      contato.outro_foto && !fotosComErro.has(contato.outro_id);
 
     return temFotoValida
       ? `http://localhost/MatchMarcha/uploads/${contato.outro_foto}`
       : avatarPadrao;
-
   }
 
   function aoSelecionarImagem(event) {
-
     const arquivo = event.target.files?.[0];
     event.target.value = "";
 
@@ -294,14 +282,12 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
       return;
     }
 
-    setErroAnexo('');
+    setErroAnexo("");
     const previewUrl = URL.createObjectURL(arquivo);
-    setAnexoSelecionado({ arquivo, tipo: 'imagem', previewUrl });
-
+    setAnexoSelecionado({ arquivo, tipo: "imagem", previewUrl });
   }
 
   function aoSelecionarArquivo(event) {
-
     const arquivo = event.target.files?.[0];
     event.target.value = "";
 
@@ -312,40 +298,31 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
       return;
     }
 
-    setErroAnexo('');
-    setAnexoSelecionado({ arquivo, tipo: 'documento', previewUrl: null });
-
+    setErroAnexo("");
+    setAnexoSelecionado({ arquivo, tipo: "documento", previewUrl: null });
   }
 
   function cancelarAnexo() {
-
     if (anexoSelecionado?.previewUrl) {
       URL.revokeObjectURL(anexoSelecionado.previewUrl);
     }
 
     setAnexoSelecionado(null);
-    setErroAnexo('');
-    setLegendaAnexo('');
-
+    setErroAnexo("");
+    setLegendaAnexo("");
   }
 
   useEffect(() => {
-
     return () => {
-
       if (anexoSelecionado?.previewUrl) {
         URL.revokeObjectURL(anexoSelecionado.previewUrl);
       }
-
     };
-
   }, [anexoSelecionado]);
 
   useEffect(() => {
-
     cancelarAnexo();
-
-  }, [contatoSelecionadoId])
+  }, [contatoSelecionadoId]);
 
   return (
     <AppLayout
@@ -360,7 +337,6 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
     >
       <div className="stack stack--lg">
         <div className="chat-page">
-
           <Contatos
             contatos={contatos}
             buscarContatos={buscarContatos}
@@ -419,11 +395,12 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
                   setMensagens={setMensagens}
                   buscarContatos={buscarContatos}
                   usuario={usuario}
+                  setPopupCriacaoAberto={setPopupCriacaoAberto}
+                  dadosUsuario={dadosUsuario}
                 />
               </>
             )}
           </section>
-
         </div>
       </div>
 
@@ -443,6 +420,43 @@ export function Chat({ dadosUsuario, carregarUsuario, usuario, contatos, buscarC
         usuario={usuario}
       />
 
+      {usuario.usuario.tipo === "instrutor" && (
+        <PopupCriacaoAula
+          aberto={popupCriacaoAberto}
+          fechar={() => setPopupCriacaoAberto(false)}
+          alunoInicial={
+            contatoSelecionado
+              ? {
+                  id: contatoSelecionado.outro_id,
+                  nome: contatoSelecionado.outro_nome,
+                }
+              : null
+          }
+          contatos={contatos}
+          cidades={cidades}
+          aulas={aulas}
+          buscarAulas={buscarAulas}
+        />
+      )}
+
+      <PopupCriacaoAula
+        aberto={popupCriacaoAberto}
+        fechar={() => setPopupCriacaoAberto(false)}
+        alunoInicial={
+          contatoSelecionado
+            ? {
+                id: contatoSelecionado.outro_id,
+                nome: contatoSelecionado.outro_nome,
+              }
+            : null
+        }
+        contatos={contatos}
+        cidades={cidades}
+        aulas={aulas}
+        buscarAulas={buscarAulas}
+        dadosUsuario={dadosUsuario}
+      />
+      
     </AppLayout>
   );
 }

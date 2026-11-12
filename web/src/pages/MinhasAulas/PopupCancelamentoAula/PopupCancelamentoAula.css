@@ -1,0 +1,30 @@
+.cancelar-aula {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.cancelar-aula__dados {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-100);
+}
+
+.cancelar-aula__dados > div {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.cancelar-aula__dados dd {
+  margin: 0;
+}
+
+.cancelar-aula__rotulo {
+  min-width: 5.5rem;
+  color: var(--text-muted);
+}

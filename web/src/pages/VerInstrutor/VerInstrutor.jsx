@@ -44,7 +44,12 @@ export function VerInstrutor({ usuario, dadosUsuario, carregarUsuario, cidades }
         if (respostaInstrutor.status === 200) {
           setInstrutor(respostaInstrutor.data.instrutor);
         } else {
-          setErro(respostaInstrutor.data.Erro ?? 'Erro ao carregar instrutor.');
+          const erroApi = respostaInstrutor.data?.Erro;
+          const mensagem =
+            typeof erroApi === 'string'
+              ? erroApi
+              : (erroApi && Object.values(erroApi)[0]) || 'Erro ao carregar instrutor.';
+          setErro(String(mensagem));
           setInstrutor(null);
           setCarregando(false);
           return;

@@ -196,6 +196,10 @@ class Instrutor{
         
     }
 
+    public function acharTipoAula($instrutorId){
+        return DataBase::table('Tb_Instrutor')->select()->where("Ins_id = :instrutorId", ["instrutorId" => $instrutorId]);
+    }
+
 }
 
 ?>

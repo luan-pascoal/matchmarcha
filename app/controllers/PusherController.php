@@ -45,6 +45,7 @@ class PusherController{
     private function verificarPermissao($canal, $usuario){
 
         // Canal das solicitações de aulas dos instrutores
+        // Escuta tb criação/edição e remoção de aulas 
         if(preg_match('/^private-instrutor(\d+)$/', $canal, $matches)){
 
             // Verifica se o usuario é um instrutor e verifica se 
@@ -55,6 +56,7 @@ class PusherController{
         }
 
         // Canal que recebe os novos contatos dos usuários
+        // Escuta tb criação/edição e remoção de aulas 
         if(preg_match('/^private-usuario(\d+)$/', $canal, $matches)){
 
             return $usuario['tipo'] === 'usuario' && (int)$usuario['id'] === (int) $matches[1];

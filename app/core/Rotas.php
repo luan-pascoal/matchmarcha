@@ -21,7 +21,9 @@ class Rotas {
         "SolicitacaoController",
         "PusherController",
         "ContatoController",
-        "MensagemController"
+        "MensagemController",
+        "FeriadoController",
+        "AulaController"
     ]; 
 
     public function adicionar($metodo, $rota, $chamada, $restricaoTipo)

@@ -1,0 +1,378 @@
+:root {
+  --minhas-aulas-feriado: color-mix(in srgb, var(--color-tertiary) 50%, white);
+}
+
+.minhas-aulas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.minhas-aulas__coluna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: 0 var(--space-4);
+  min-width: 0;
+  min-height: 28rem;
+}
+
+.minhas-aulas__coluna + .minhas-aulas__coluna {
+  border-left: 1px solid var(--color-gray-200);
+}
+
+/* Abaixo de 900px as colunas empilham, com o calendário primeiro */
+@media (max-width: 900px) {
+  .minhas-aulas__colunas {
+    grid-template-columns: 1fr;
+  }
+
+  .minhas-aulas__coluna + .minhas-aulas__coluna {
+    border-left: none;
+    border-top: 1px solid var(--color-gray-200);
+    padding-top: var(--space-4);
+  }
+
+  .minhas-aulas__coluna--mes {
+    order: -1;
+  }
+}
+
+/* ---------- Grade mensal ---------- */
+
+.minhas-aulas__mes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Cabeçalho alinhado à grade de 7 colunas: "Hoje" na 5ª, "<" na 6ª e ">" na 7ª */
+.minhas-aulas__mes-cabecalho {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;
+}
+
+.minhas-aulas__mes-titulo {
+  grid-column: 1 / 5;
+  margin: 0;
+}
+
+.minhas-aulas__btn-hoje {
+  grid-column: 5;
+  justify-self: end;
+  margin-right: var(--space-2);
+}
+
+.minhas-aulas__btn-mes {
+  justify-self: center;
+}
+
+.minhas-aulas__btn-mes--anterior {
+  grid-column: 6;
+}
+
+.minhas-aulas__btn-mes--proximo {
+  grid-column: 7;
+}
+
+.minhas-aulas__grade {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.minhas-aulas__semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-2);
+}
+
+.minhas-aulas__dia-semana {
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.minhas-aulas__dia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.5rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  position: relative;
+}
+
+.minhas-aulas__dia:hover {
+  background: var(--color-gray-100);
+}
+
+.minhas-aulas__dia:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Dia de hoje: contorno discreto */
+.minhas-aulas__dia--hoje {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+/* Dia selecionado: preenchimento sólido */
+.minhas-aulas__dia--selecionado,
+.minhas-aulas__dia--selecionado:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* ---------- Resumo, contagem e lista do dia ---------- */
+
+.minhas-aulas__mes-nome,
+.minhas-aulas__mes-resumo {
+  margin: 0;
+}
+
+/* Círculo com o número de aulas, no canto da célula do dia */
+.minhas-aulas__dia-contagem {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--color-secondary);
+  color: var(--color-white);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.minhas-aulas__painel {
+  display: flex;
+  flex-direction: column;
+  max-height: 28rem;
+}
+
+
+.minhas-aulas__painel-titulo {
+  margin: 0 0 var(--space-4);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+
+.minhas-aulas__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  padding-right: var(--space-2);
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ---------- Estilização da scrollbar ---------- */
+
+/* Para Chrome, Safari, Edge (WebKit) */
+.minhas-aulas__lista::-webkit-scrollbar {
+  width: 6px;  
+}
+
+.minhas-aulas__lista::-webkit-scrollbar-track {
+  background: transparent;  
+}
+
+.minhas-aulas__lista::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300); 
+  border-radius: 3px;                
+  transition: background 200ms ease;  
+}
+
+.minhas-aulas__lista::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400); 
+}
+
+/* Para Firefox (compatibilidade) */
+.minhas-aulas__lista {
+  scrollbar-width: thin;                                   
+  scrollbar-color: var(--color-gray-300) transparent;     
+}
+
+.minhas-aulas__aula {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.minhas-aulas__aula:hover {
+  background: var(--color-gray-100);
+}
+
+.minhas-aulas__aula:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.minhas-aulas__aula-nome {
+  font-weight: 600;
+}
+
+.minhas-aulas__aula-horario {
+  color: var(--text-muted);
+}
+
+.minhas-aulas__aula-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.minhas-aulas__aula-status--agendada {
+  color: var(--color-primary);
+}
+
+.minhas-aulas__aula-status--concluida,
+.minhas-aulas__aula-status--cancelada {
+  color: var(--text-muted);
+}
+
+/* Aula cancelada: texto apagado e riscado */
+.minhas-aulas__aula--cancelada .minhas-aulas__aula-nome,
+.minhas-aulas__aula--cancelada .minhas-aulas__aula-horario {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+/* ---------- Legenda ---------- */
+
+.minhas-aulas__legenda-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.minhas-aulas__legenda-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+}
+
+.minhas-aulas__legenda-marca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.minhas-aulas__legenda-marca--feriado {
+  background: var(--minhas-aulas-feriado);
+}
+
+.minhas-aulas__legenda-marca--selecionado {
+  background: var(--color-primary);
+}
+
+.minhas-aulas__legenda-marca--aulas {
+  border-radius: 999px;
+  background: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.minhas-aulas__legenda-marca--hoje {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+/* ---------- Grid das colunas ---------- */
+
+
+.minhas-aulas__colunas {
+  display: grid;
+  grid-template-columns: 20% 55% 25%;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.minhas-aulas__filtro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.minhas-aulas__autocomplete {
+  position: relative;
+}
+
+.minhas-aulas__sugestoes {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 14rem;
+  overflow-y: auto;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+}
+
+.minhas-aulas__sugestao {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.minhas-aulas__sugestao:hover {
+  background: var(--color-gray-100);
+}
+
+/* Feriado: no fundo, tem prioridade sobre dia selecionado e hoje (seção 2.3 do spec) */
+.minhas-aulas__dia--feriado,
+.minhas-aulas__dia--feriado:hover,
+.minhas-aulas__dia--selecionado.minhas-aulas__dia--feriado,
+.minhas-aulas__dia--selecionado.minhas-aulas__dia--feriado:hover {
+  background: var(--minhas-aulas-feriado);
+  color: var(--text);
+}
+
+/* Feriado selecionado: como o fundo é do feriado, um anel mostra que o dia está selecionado */
+.minhas-aulas__dia--selecionado.minhas-aulas__dia--feriado {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+/* Nome do feriado na coluna do dia */
+.minhas-aulas__feriado {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-2);
+  border-left: 4px solid var(--minhas-aulas-feriado);
+  font-weight: 600;
+}

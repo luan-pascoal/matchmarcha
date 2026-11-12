@@ -50,7 +50,8 @@ $rota->adicionar('GET', '/veiculos/{id}', 'VeiculoController::listarTodos', 'nen
 $rota->adicionar('POST', '/esqueci-senha', 'EsqueciSenhaController::recuperarSenha', 'nenhuma');
 // Rota que possibilita a redefinição de senha da funcionalidade Esqueci Senha
 $rota->adicionar('POST', '/nova-senha', 'NovaSenhaController::redefinirSenha', 'nenhuma');
-
+// Rota que retorna os feriados para o Calendário
+$rota->adicionar('GET', '/feriados/{ano}', 'FeriadoController::listarTodos', 'nenhuma');
 
 
 /************************************************************
@@ -107,6 +108,14 @@ $rota->adicionar('PUT','/mensagens/{idMsg}','MensagemController::editarMensagem'
 $rota->adicionar('DELETE','/mensagens/{idMsg}/ocultar','MensagemController::ocultarMensagem','logado');
 // Responsável por remover mensagens para os dois participantes do chat
 $rota->adicionar('DELETE','/mensagens/{idMsg}','MensagemController::excluirMensagem','logado');
+// Responsável por retornar todas as aulas de usuario aluno ou instrutor
+$rota->adicionar('GET','/calendario','AulaController::listarTodas','logado');
+// Responsável por criar uma aula
+$rota->adicionar('POST','/calendario','AulaController::criarAula','instrutor');
+// Responsável por editar uma aula
+$rota->adicionar('PUT','/calendario/{idAula}','AulaController::editarAula','instrutor');
+// Responsável por remover uma aula
+$rota->adicionar('DELETE','/calendario/{idAula}','AulaController::excluirAula','instrutor');
 
 $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 

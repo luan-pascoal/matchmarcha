@@ -154,6 +154,16 @@ class Contato{
         
     }
 
+    public function acharContatoAlunoInstrutor($usuarioId, $instrutorId){
+
+    return DataBase::table('Tb_Contato')->select()->where(
+        "Ctt_usuarioid = :usuarioId AND Ctt_instrutorid = :instrutorId AND Ctt_datadelete IS NULL",
+        ["usuarioId" => $usuarioId, "instrutorId" => $instrutorId]
+    );
+    
+    }
+
+
 }
 
 ?>
